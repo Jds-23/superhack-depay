@@ -1,6 +1,8 @@
 import { API_URL } from '@/constants/env';
-import { Token } from '@/lib/types/token';
+import { MetadataSchema } from '@/lib/types/metadata';
+import { Token, TokenSchema } from '@/lib/types/token';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
 
 export interface Merchant {
     id: string;
@@ -13,15 +15,14 @@ export interface Merchant {
     offerings: any[]; // Define a more specific type if needed
 }
 
-export interface CreateMerchantParams {
-    id: string;
-    baseToken: Token;
-    metadata: {
-        name: string;
-        description: string;
-    };
-    walletAddress: string;
-}
+// Define the Zod schema for Merchant creation
+export const createMerchantSchema = z.object({
+    walletAddress: z.string(),
+    baseToken: TokenSchema,
+    metadata: MetadataSchema,
+});
+
+export type CreateMerchantType = z.infer<typeof createMerchantSchema>;
 
 const fetchMerchantById = async (id: string): Promise<Merchant> => {
     const response = await fetch(`${API_URL}/api/merchants/${id}`);
@@ -61,7 +62,7 @@ const fetchMerchantPayments = async (id: string): Promise<any[]> => {
     }
     return response.json();
 };
-const createMerchant = async (data: CreateMerchantParams): Promise<Merchant> => {
+const createMerchant = async (data: CreateMerchantType): Promise<Merchant> => {
     const response = await fetch(`${API_URL}/api/merchants`, {
         method: 'POST',
         headers: {

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-import AppContext from "@/context/App";
-
-const inter = Inter({ subsets: ["latin"] });
+import AppContext from "@/context/AppContext";
+import localFont from 'next/font/local';
+const myFont = localFont({ src: '../fonts/gilroy/Gilroy-Medium.ttf' })
 
 export const metadata: Metadata = {
   title: "DePay",
@@ -18,9 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Header />
-        <AppContext>{children}</AppContext>
+      <body className={myFont.className}>
+        <AppContext>
+          <div className="">
+            {children}
+          </div>
+        </AppContext>
       </body>
     </html>
   );

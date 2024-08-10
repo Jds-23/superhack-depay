@@ -1,4 +1,8 @@
+import { API_URL } from '@/constants/env';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import { createCustomerSchema } from '../customer';
+import { createOfferingSchema } from '../useOfferings';
 
 export interface Invoice {
     id: number;
@@ -8,22 +12,28 @@ export interface Invoice {
     offering: any; // Replace 'any' with the actual Offering type
 }
 
-export interface CreateInvoiceParams {
-    offeringId: number;
-    customerId: number;
-    // Add more fields if needed
-}
+// Define the Zod schema for Invoice creation
+const createInvoiceSchema = z.object({
+    // customer: Create
+    offeringId: z.number().optional(),
+    offering: createOfferingSchema.optional(),
+    customerId: z.string().optional(),
+    customer: createCustomerSchema.optional(),
+    date: z.string(),
+});
+
+export type CreateInvoiceType = z.infer<typeof createInvoiceSchema>;
 
 const fetchInvoiceById = async (id: number): Promise<Invoice> => {
-    const response = await fetch(`/api/invoices/${id}`);
+    const response = await fetch(`${API_URL}/api/invoices/${id}`);
     if (!response.ok) {
         throw new Error(`Failed to fetch invoice with ID ${id}`);
     }
     return response.json();
 };
 
-const createInvoice = async (data: CreateInvoiceParams): Promise<Invoice> => {
-    const response = await fetch('/api/invoices', {
+const createInvoice = async (data: CreateInvoiceType): Promise<Invoice> => {
+    const response = await fetch(`${API_URL}/api/invoices`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

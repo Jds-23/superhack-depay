@@ -1,0 +1,26 @@
+{
+    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {
+        "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "chainId": "59144",
+        "symbol": "ETH",
+        "decimals": 18
+    },
+    "0xA219439258ca9da29E9Cc4cE5596924745e12B93": {
+        "address": "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
+        "chainId": "59144",
+        "symbol": "USDT",
+        "decimals": 6
+    },
+    "0x176211869cA2b568f2A7D4EE941E073a821EE1ff": {
+        "address": "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+        "chainId": "59144",
+        "symbol": "USDC",
+        "decimals": 6
+    },
+    "0xcc22F6AA610D1b2a0e89EF228079cB3e1831b1D1": {
+        "address": "0xcc22F6AA610D1b2a0e89EF228079cB3e1831b1D1",
+        "chainId": "59144",
+        "symbol": "LVC",
+        "decimals": 18
+    }
+}

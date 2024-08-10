@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Token } from '../types/token';
-import { Metadata } from '../types/metadata';
+import { Token, TokenSchema } from '../types/token';
+import { Metadata, MetadataSchema } from '../types/metadata';
 import { API_URL } from '@/constants/env';
+import { z } from 'zod';
 
 export interface Offering {
     id: number;
@@ -13,15 +14,18 @@ export interface Offering {
     isLive: boolean;
 }
 
-export interface CreateOfferingParams {
-    metadata: Metadata;
-    price: string; // string because we're converting to BigInt later
-    customToken: Token;
-    stock: number;
-    isUnlimited: boolean;
-    isLive: boolean;
-    merchantId: string;
-}
+// Define the Zod schema for Offering creation
+export const createOfferingSchema = z.object({
+    id: z.number().optional(),
+    price: z.string(),
+    customToken: TokenSchema.optional(),
+    metadata: MetadataSchema,
+    stock: z.number(),
+    isUnlimited: z.boolean(),
+    merchantId: z.string(),
+});
+
+export type CreateOfferingType = z.infer<typeof createOfferingSchema>;
 
 const fetchOfferingById = async (id: number): Promise<Offering> => {
     const response = await fetch(`${API_URL}/api/offerings/${id}`);
@@ -31,7 +35,7 @@ const fetchOfferingById = async (id: number): Promise<Offering> => {
     return response.json();
 };
 
-const createOffering = async (data: CreateOfferingParams): Promise<Offering> => {
+const createOffering = async (data: CreateOfferingType): Promise<Offering> => {
     const response = await fetch(`${API_URL}/api/offerings`, {
         method: 'POST',
         headers: {
