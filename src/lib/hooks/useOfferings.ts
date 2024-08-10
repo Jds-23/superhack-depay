@@ -3,6 +3,7 @@ import { Token, TokenSchema } from '../types/token';
 import { Metadata, MetadataSchema } from '../types/metadata';
 import { API_URL } from '@/constants/env';
 import { z } from 'zod';
+import { Merchant } from './merchant';
 
 export interface Offering {
     id: number;
@@ -12,6 +13,7 @@ export interface Offering {
     stock: number;
     isUnlimited: boolean;
     isLive: boolean;
+    merchant: Merchant;
 }
 
 // Define the Zod schema for Offering creation

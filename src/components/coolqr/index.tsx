@@ -189,3 +189,37 @@ type AddressQRCodeProps = {
     gradientProps?: GradientProps
 }
 
+export const AddressQRCode: React.FC<{
+    address: string,
+    imgStr?: string
+}> = ({
+    address,
+    imgStr
+}) => {
+
+        return (
+            <div className='m-3 border border-input bg-white rounded-lg p-1 mt-0 relative'>
+                <CoolQRCode
+                    backgroundColor='white'
+                    color='#2663EB'
+                    borderRadius={0}
+                    ecl='H'
+                    size={144}
+                    value={address}
+                    enableLinearGradient={false}
+                    gradientDirection={["", "", "", ""]}
+                    linearGradient={["", ""]}
+                    overlayColor='blue'
+                    quietZone={0}
+                />
+                {
+                    imgStr && <div className='absolute top-0 m-1 left-0 w-[144px] h-[144px] flex justify-center items-center'>
+                        <div className='w-8 h-8 bg-white rounded-full'>
+                            <img src={imgStr} />
+                        </div>
+                    </div>
+                }
+            </div>
+        )
+    }
+
