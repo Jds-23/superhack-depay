@@ -16,9 +16,7 @@ export interface Offering {
 
 // Define the Zod schema for Offering creation
 export const createOfferingSchema = z.object({
-    id: z.number().optional(),
     price: z.string(),
-    customToken: TokenSchema.optional(),
     metadata: MetadataSchema,
     stock: z.number(),
     isUnlimited: z.boolean(),

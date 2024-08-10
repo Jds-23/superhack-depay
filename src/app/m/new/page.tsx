@@ -35,13 +35,13 @@ const New = () => {
 
     return (
         <>
-            <div className="flex min-h-svh flex-col md:flex-row space-x-4">
+            <div className="flex min-h-svh flex-col md:flex-row md:justify-between">
                 <div className="w-full md:w-1/2 md:order-last">
                     <ProfileView
                         metadata={createMerchantForm.watch('metadata')}
                     />
                 </div>
-                <div className="w-full mt-7 md:mt-0 md:w-1/2">
+                <div className="w-full px-2 mt-7 md:mt-0 md:w-1/2">
                     <FormProvider {...createMerchantForm}>
                         <form onSubmit={createMerchantForm.handleSubmit(onSubmit)} className="space-y-6 h-full flex">
                             <CreateMerchant
