@@ -62,18 +62,18 @@ const PayPage = () => {
                     }
                 </div>
                 <div className="w-full px-2 max-w-prose mt-7 md:mt-0 md:w-1/2">
-                    <FormProvider {...createPaymentForm}>
-                        <form onSubmit={createPaymentForm.handleSubmit(onSubmit)} className="space-y-6 h-full flex">
-                            {
-                                offering?.merchant.walletAddress && offering?.merchant.baseToken &&
-                                <PayComponent
-                                    price={offering?.price.toString()}
-                                    merchantAddress={offering?.merchant.walletAddress}
-                                    merchantToken={offering?.merchant.baseToken}
-                                />
-                            }
-                        </form>
-                    </FormProvider>
+                    {/* <FormProvider {...createPaymentForm}> */}
+                    <div className="space-y-6 h-full flex">
+                        {
+                            offering?.merchant.walletAddress && offering?.merchant.baseToken &&
+                            <PayComponent
+                                price={offering?.price.toString()}
+                                merchantAddress={offering?.merchant.walletAddress}
+                                merchantToken={offering?.merchant.baseToken}
+                            />
+                        }
+                    </div>
+                    {/* </FormProvider> */}
                 </div>
             </div>
 
@@ -82,3 +82,5 @@ const PayPage = () => {
 }
 
 export default PayPage
+
+// onSubmit={createPaymentForm.handleSubmit(onSubmit)}

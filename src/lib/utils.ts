@@ -205,3 +205,12 @@ export const formatNumber = (number: number | string) => {
 
   return numeral(Math.ceil(number * 100) / 100).format('0.[00]');
 };
+export const gqlFetcher = async (url: string, query: string, variables: any) => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables }),
+  });
+  const json = await response.json();
+  return json.data;
+};
