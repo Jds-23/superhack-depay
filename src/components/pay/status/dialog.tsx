@@ -16,9 +16,9 @@ export const addresses = {
 const explorers: {
     [key: number]: string
 } = {
-    10: "https://optimism.blockscout.com/",
-    8453: "https://base.blockscout.com/",
-    34443: "https://explorer.mode.network/",
+    10: "https://optimism.blockscout.com/tx/",
+    8453: "https://base.blockscout.com/tx/",
+    34443: "https://explorer.mode.network/tx/",
 }
 
 const PaymentStatusDialog = ({
