@@ -2,10 +2,11 @@ import { Metadata } from '@/lib/types/metadata'
 import { formatNumber } from '@/lib/utils'
 import Image from 'next/image'
 import React from 'react'
+import { formatUnits } from 'viem'
 
 type OfferingDisplayProps = {
     metadata: Metadata
-    price: string
+    price: bigint
     stock: number
 }
 const OfferingDisplay = ({
@@ -17,7 +18,7 @@ const OfferingDisplay = ({
         <div className='relative m-auto flex justify-center items-center'>
             <div className="m-auto">
                 <h2 className='text-lg font-semibold'>{metadata.name}</h2>
-                <h2 className='text-xl font-bold'>${formatNumber(price)}</h2>
+                <h2 className='text-xl font-bold'>${formatNumber(formatUnits(price, 6))}</h2>
                 <img
                     src={`/product.png`}
                     alt={''}

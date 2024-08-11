@@ -104,7 +104,8 @@ export const usePeDeposit = (quoteQueryParams: PeQuoteQueryParams, senderAddress
             if (!quoteData) {
                 throw new Error('Failed to fetch quote');
             }
-            const res = await fetch('https://btc-testnet.poap-nft.routernitro.com/internal/transaction', {
+            const res = await fetch('http://localhost:9018/transaction', {
+                // const res = await fetch('https://btc-testnet.poap-nft.routernitro.com/internal/transaction', {
                 // const res = await fetch(`${API_URL}transaction`, {
                 method: 'POST',
                 headers: {
@@ -139,7 +140,8 @@ export const usePeTransactionHash = (da: string | undefined, enabled: boolean) =
             if (!da) {
                 throw new Error('Da is empty');
             }
-            const res = await fetch(`https://btc-testnet.poap-nft.routernitro.com/internal/txnHash?da=${da}`);
+            // const res = await fetch(`https://btc-testnet.poap-nft.routernitro.com/internal/txnHash?da=${da}`);
+            const res = await fetch(`http://localhost:9018/txnHash?da=${da}`);
             // const res = await fetch(`${API_URL}txnHash?da=${da}`);
 
             if (!res.ok) {

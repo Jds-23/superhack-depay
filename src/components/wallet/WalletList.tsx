@@ -3,7 +3,7 @@ import { ChainIds } from '@/constants/chains';
 import { CHAINS_DATA } from '@/constants/chains/list';
 import { useWalletContext } from '@/context/WalletContext';
 import { getWallet } from '@/lib/walletUtils';
-import { WalletData, WalletId } from '@/types/WalletContextTypes';
+import { WalletData, WalletId } from '@/lib/types/WalletContextTypes';
 import Image from 'next/image';
 
 const WalletList = ({ showNetwork }: { showNetwork?: boolean }) => {

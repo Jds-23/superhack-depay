@@ -2,7 +2,7 @@
 
 import { WALLETS } from '@/constants/wallets';
 import { useWalletContext } from '@/context/WalletContext';
-import { WalletId } from '@/types/WalletContextTypes';
+import { WalletId } from '@/lib/types/WalletContextTypes';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useConnect } from 'wagmi';
@@ -14,7 +14,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '../ui/command';
+} from '@/components/ui/command';
 import { getWallet } from '@/lib/walletUtils';
 
 export function WalletListModal({ open, setOpen }: { open: boolean; setOpen: Dispatch<SetStateAction<boolean>> }) {
@@ -45,7 +45,7 @@ export function WalletListModal({ open, setOpen }: { open: boolean; setOpen: Dis
         <CommandEmpty>No wallets.</CommandEmpty>
 
         <CommandGroup heading='Ethereum'>
-          {evmConnectors.map((wallet : any) => (
+          {evmConnectors.map((wallet: any) => (
             <CommandItem
               key={wallet.name}
               value={wallet.name}

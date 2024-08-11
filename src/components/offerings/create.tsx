@@ -8,6 +8,15 @@ import { CurrencyInput, Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Textarea } from '../ui/textarea';
 type CreateOfferingProps = {
     isPending: boolean;
     status: string;
@@ -20,16 +29,19 @@ const CreateOffering = ({ className, isPending, ...rest }: React.HTMLAttributes<
         <>
             <div className={cn('sm:pl-9 my-auto', className)}>
                 {/* Link go back to dash board with an back arrow */}
-                <div className='flex text-muted-foreground items-center mb-1' onClick={
-                    () => {
-                        window.location.href = '/m/dashboard'
-                    }
-                }>
-                    <ArrowLeftIcon />
-                    <p className='text-sm cursor-pointer font-semibold underline'>Back</p>
-                </div>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/m">Dashboard</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>New Product</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
                 <h1 className='text-lg sm:text-2xl font-semibold'>
-                    Create A Product
+                    Create A Product/Service
                 </h1>
                 {
                     createOfferingForm &&
@@ -39,12 +51,12 @@ const CreateOffering = ({ className, isPending, ...rest }: React.HTMLAttributes<
                             name="metadata.name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Product Name</FormLabel>
+                                    <FormLabel>Product/Service Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Table" {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Give A Catchy Name To Your Product
+                                        Give A Catchy Name To Your Product/Service
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -55,12 +67,17 @@ const CreateOffering = ({ className, isPending, ...rest }: React.HTMLAttributes<
                             name="metadata.description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Product Description</FormLabel>
+                                    <FormLabel>Product/Service Description</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Sturdy table to play WWE or to make love." {...field} />
+                                        {/* <Input placeholder="Sturdy table to play WWE or to make love." {...field} /> */}
+                                        <Textarea
+                                            placeholder="Sturdy table to play WWE or to make love."
+                                            className="resize-none"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormDescription>
-                                        About your product in a few words for your customers to know what they are buying.
+                                        About your product or service in a few words for your customers to know what they are buying.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -102,7 +119,7 @@ const CreateOffering = ({ className, isPending, ...rest }: React.HTMLAttributes<
                                             ref={field.ref} />
                                     </FormControl>
                                     <FormDescription>
-                                        How many products you have in stock.
+                                        How many items you have in stock.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

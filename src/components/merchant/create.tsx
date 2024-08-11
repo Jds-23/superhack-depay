@@ -19,6 +19,16 @@ import NetworkSelector, { NetworkSelect } from '../NetworkSelector';
 import { ChainIds } from '@/constants/chains';
 import CurrencyAndChainSelector from '../currencyAndChainSelector';
 import { ArrowLeft } from 'lucide-react'
+import { Textarea } from '../ui/textarea'
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
 
 type CreateMerchantProps = {
     isPending: boolean;
@@ -44,14 +54,17 @@ const CreateMerchant = ({ className, isPending, ...rest }: React.HTMLAttributes<
     return (
         <div className={cn('sm:pl-9 my-auto', className)}>
             {/* Link go back to dash board with an back arrow */}
-            <div className='flex text-muted-foreground items-center mb-1' onClick={
-                () => {
-                    window.location.href = '/m/dashboard'
-                }
-            }>
-                <ArrowLeft size={20} />
-                <p className='text-sm cursor-pointer font-semibold underline'>Back</p>
-            </div>
+            <Breadcrumb>
+                <BreadcrumbList>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink href="/m">Dashboard</BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>New Merchant</BreadcrumbPage>
+                    </BreadcrumbItem>
+                </BreadcrumbList>
+            </Breadcrumb>
             <h1 className='text-lg sm:text-2xl font-semibold'>
                 Create Merchant Your Merchant Profile
             </h1>
@@ -65,10 +78,10 @@ const CreateMerchant = ({ className, isPending, ...rest }: React.HTMLAttributes<
                             <FormItem>
                                 <FormLabel>Merchant Name</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Input placeholder="Maximum Effort Inc." {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    This could either be your business name or your personal name.
+                                    This could either be your business name or your secret superhero name.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -81,10 +94,14 @@ const CreateMerchant = ({ className, isPending, ...rest }: React.HTMLAttributes<
                             <FormItem>
                                 <FormLabel>Merchant Description</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="shadcn" {...field} />
+                                    <Textarea
+                                        placeholder="A trillion dollar company to be, with 0 customer."
+                                        className="resize-none"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormDescription>
-                                    About your business or yourself.
+                                    About your business or yourself (try not be honest).
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>

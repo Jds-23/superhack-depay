@@ -17,7 +17,7 @@ const Header = () => {
         <div className="h-24 pt-3 px-3 md:px-32 fixed top-0 left-0 w-full">
             <div className="h-16 p-3 flex justify-between items-center rounded-xl border-2 border-bg5 bg-[#d1eaff]  md:border-2">
                 <Link href="/">
-                    <Image src={Logo} alt="img" />
+                    <Image src={Logo} className="object-contain max-w-10" alt="img" />
                 </Link>
                 {/* <button
                     onClick={openWalletModal}

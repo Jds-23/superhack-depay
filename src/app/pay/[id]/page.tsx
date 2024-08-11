@@ -52,7 +52,7 @@ const PayPage = () => {
                                     offering?.metadata && (
                                         <OfferingDisplay
                                             metadata={offering?.metadata}
-                                            price={offering?.price.toString()}
+                                            price={offering?.price}
                                             stock={offering?.stock}
                                         />
                                     )

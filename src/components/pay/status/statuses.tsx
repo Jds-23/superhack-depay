@@ -1,5 +1,15 @@
 import { TPaymentStatus } from "./dialog"
 
+export const waitingForSourceToTrigger: TPaymentStatus[] = [
+    {
+        status: 'waiting',
+        text: 'Confirming for source',
+    },
+    {
+        status: 'waiting',
+        text: 'Waiting for source confirmation',
+    },
+]
 export const waitingForSourceConfirmation: TPaymentStatus[] = [
     {
         status: 'pending',

@@ -1,13 +1,20 @@
 "use client";
 import CreateMerchant from '@/components/merchant/create'
 import ProfileView from '@/components/merchant/profileView';
+import { useWalletContext } from '@/context/WalletContext';
 import { createMerchantSchema, useMerchant } from '@/lib/hooks/merchant';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
+
 const New = () => {
+    const {
+        currentAccount,
+        openWalletModal,
+    } = useWalletContext()
     const { useCreateMerchant } = useMerchant()
     const {
         mutateAsync: createMerchant,
@@ -18,7 +25,7 @@ const New = () => {
     const createMerchantForm = useForm<z.infer<typeof createMerchantSchema>>({
         resolver: zodResolver(createMerchantSchema),
         defaultValues: {
-            walletAddress: '0x0',
+            walletAddress: currentAccount?.address,
             metadata: {
                 name: '',
                 description: '',
@@ -26,11 +33,22 @@ const New = () => {
         }
     });
 
+    useEffect(() => {
+        if (currentAccount) {
+            createMerchantForm.setValue('walletAddress', currentAccount.address)
+        }
+    }, [currentAccount, createMerchantForm])
+
     function onSubmit(values: z.infer<typeof createMerchantSchema>) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
         console.log(values)
-        createMerchant(values)
+        createMerchant(values).then(() => {
+            toast("Your merchant profile is created.")
+            window.location.href = '/m'
+        }).catch(() => {
+            toast("Failed to create merchant profile.")
+        });
     }
 
     return (

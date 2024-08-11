@@ -1,8 +1,8 @@
-import { Token, TokenSchema } from '@/lib/types/token';
+import { ethereumAddressSchema, Token, TokenSchema } from '@/lib/types/token';
 import { cn, formatNumber, getTokenLogoURI } from '@/lib/utils';
 import React, { use, useEffect, useState } from 'react'
 import { useForm, useFormContext } from 'react-hook-form';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { Separator } from '../ui/separator';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import CurrencyAndChainSelector from '../currencyAndChainSelector';
@@ -11,19 +11,19 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Label } from '../ui/label';
-import CoolQRCode, { AddressQRCode } from '../coolqr';
+import { AddressQRCode } from '../coolqr';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CircleProgress } from './status/progress';
-import Image from 'next/image';
 import PaymentStatusDialog, { TPaymentStatus } from './status/dialog';
 import { usePeDeposit, usePeTransactionHash } from '@/lib/hooks/usePeQuote';
 import useWatchCrosschainTransaction from '@/lib/hooks/useWatchCrossTransaction';
-import { onDestinationError, onSourceConfirm, onSourceError, waitingForSourceConfirmation } from './status/statuses';
+import { onDestinationError, onSourceConfirm, onSourceError, waitingForSourceConfirmation, waitingForSourceToTrigger } from './status/statuses';
 import { useSendToken } from '@/lib/hooks/useSendToken';
+import useTokenCalculations from '@/lib/hooks/useTokenCalculation';
+import { formatUnits } from 'viem';
 
 export const paymentSchema = z.object({
     fromToken: TokenSchema,
-    refundAddress: z.string(),
+    refundAddress: ethereumAddressSchema,
 });
 
 type PayComponentProps = {
@@ -54,7 +54,7 @@ const PayComponent = ({
         setOpen("QR")
     }
     const [chainId, seChainId] = useState<ChainIds>("137");
-    const [open, setOpen] = useState<DialogFor | undefined>("Processing");
+    const [open, setOpen] = useState<DialogFor | undefined>();
     const token = paymentForm.watch('fromToken')
 
 
@@ -63,21 +63,30 @@ const PayComponent = ({
             paymentForm.resetField('fromToken')
         }
     }, [chainId, token])
-
+    const {
+        getTokenAmount
+    } = useTokenCalculations()
+    const amount = paymentForm.getValues('fromToken') ? getTokenAmount({
+        value: formatUnits(BigInt(price), 6),
+        token: paymentForm.getValues('fromToken')
+    }).toString() : "0"
+    const safeAmount = paymentForm.getValues('fromToken') ? getTokenAmount({
+        value: formatUnits((BigInt(price) * BigInt(100200)) / BigInt(100000), 6),
+        token: paymentForm.getValues('fromToken')
+    }).toString() : "0"
     const {
         data: transactionData,
-        isLoading: isTransactionLoading,
         isError: isTransactionError,
         error: transactionDataError,
     } = usePeDeposit(
         {
             fromTokenAddress: paymentForm.getValues('fromToken')?.address,
             toTokenAddress: merchantToken.address,
-            //    toAddress: merchantAddress,
-            toAddress: "0x40d5250D1ce81fdD1F0E0FB4F471E57AA0c1FaD3",
+            toAddress: merchantAddress,
+            // toAddress: "0x40d5250D1ce81fdD1F0E0FB4F471E57AA0c1FaD3",
             // amount: price, // to be converted to string
-            amount: "1000000",
-            enabled: !!token,
+            amount,
+            enabled: !!token && !!merchantToken && !!merchantAddress && BigInt(price) > BigInt(0),
             fromTokenChainId: chainId,
             toTokenChainId: merchantToken.chainId,
 
@@ -85,14 +94,20 @@ const PayComponent = ({
         paymentForm.getValues('refundAddress'),
     )
 
+    useEffect(() => {
+        console.log(isTransactionError)
+    }, [isTransactionError])
+
     const {
         sendToken,
-        isLoading: isSendTokenLoading,
         error: sendTokenError,
+        status: sendTokenStatus,
+        txHash: sendTokenTxHash,
     } = useSendToken({
         to: transactionData?.depositMeta?.depositAddress,
-        amount: "1000000",
-        token: paymentForm.getValues('fromToken')
+        amount: safeAmount.toString(),
+        token: paymentForm.getValues('fromToken'),
+        enabled: !!transactionData?.depositMeta?.depositAddress,
     })
 
     const {
@@ -100,7 +115,7 @@ const PayComponent = ({
         isLoading: isTransactionHashLoading,
         isError: isTransactionHashError,
         error: transactionHashDataError,
-    } = usePeTransactionHash(transactionData?.depositMeta?.depositAddress, open !== "Processing");
+    } = usePeTransactionHash(transactionData?.depositMeta?.depositAddress, statusArray.length === 0);
 
     const {
         status,
@@ -131,10 +146,12 @@ const PayComponent = ({
             setStatusArray(waitingForSourceConfirmation)
         },
         onCrosschainIndexed: (receipt) => {
-            setHashes((prev) => [receipt?.src_tx_hash, receipt?.dest_tx_hash])
-            setStatusArray(onSourceConfirm)
+            // setHashes((prev) => [receipt?.src_tx_hash, receipt?.dest_tx_hash])
+            // setStatusArray(onSourceConfirm)
         },
         onCrosschainDestConfirmed: (receipt) => {
+            setHashes((prev) => [prev[0], receipt])
+            setStatusArray(onSourceConfirm)
         },
         onCrosschainFailed: (receipt) => {
             setStatusArray(onDestinationError)
@@ -151,10 +168,10 @@ const PayComponent = ({
     });
 
     useEffect(() => {
-        if (statusArray.length > 0 && open !== "Processing") {
+        if ((statusArray.length > 0 || !!sendTokenStatus) && open !== "Processing") {
             setOpen("Processing");
         }
-    }, [statusArray]);
+    }, [statusArray, sendTokenStatus]);
 
 
 
@@ -171,8 +188,10 @@ const PayComponent = ({
                 />}
                 {
                     open === "Processing" && <PaymentStatusDialog
-                        hashes={hashes}
-                        statusArray={statusArray}
+                        hashes={sendTokenTxHash ? [sendTokenTxHash, ...hashes] : hashes}
+                        statusArray={sendTokenStatus ? statusArray.length === 0 ?
+                            [sendTokenStatus, ...waitingForSourceToTrigger]
+                            : [sendTokenStatus, ...statusArray] : statusArray}
                     />
                 }
             </Dialog>
@@ -185,9 +204,12 @@ const PayComponent = ({
                 </sub>
 
                 <InfoComponent
-                    token={merchantToken}
+                    token={paymentForm.watch('fromToken')}
                     chainId={chainId}
                     price={price}
+                    amount={
+                        BigInt(safeAmount) > BigInt(0) ? formatUnits(BigInt(safeAmount), token?.decimals ?? 0) : undefined
+                    }
                 />
                 <Form {...paymentForm}>
                     <form onSubmit={paymentForm.handleSubmit(onSubmit)} className="space-y-1">
@@ -235,7 +257,10 @@ const PayComponent = ({
                             type="submit"
                             className='w-full'
                         >Pay Via QR</Button>
-                        <Button type="button" onClick={() => { sendToken() }} variant={"outline"} className='w-full'>{sendTokenError ? sendTokenError : "Pay"}</Button>
+                        <Button type="button" onClick={() => {
+                            setOpen("Processing")
+                            sendToken()
+                        }} variant={"outline"} className='w-full'>{sendTokenError ? sendTokenError : "Pay"}</Button>
                     </form>
                 </Form>
             </div>
@@ -249,22 +274,24 @@ type InfoComponentProps = {
     token?: Token;
     chainId: ChainIds;
     price: string;
+    amount?: string;
 }
 
 const InfoComponent = ({
     token,
     chainId,
-    price
+    price,
+    amount
 }: InfoComponentProps) => {
     const chainName = CHAINS[chainId]
     return (
         <div className='rounded-md  items-center justify-between flex space-x-1 border border-input bg-transparent px-3 py-2 text-lg sm:text-2xl  shadow-sm transition-colors '>
             <p className='text-primary font-extrabold mr-1'>
-                ${formatNumber(price)}
+                ${formatNumber(formatUnits(BigInt(price), 6))}
             </p>
             <Separator orientation="vertical" />
-            {token ? <div className='flex-grow text-base sm:text-xl'>
-                Min 1214 {token?.symbol} on {chainName.toUpperCase().slice(0, 3)} within
+            {(token && amount) ? <div className='flex-grow text-base sm:text-xl'>
+                Min {formatNumber(amount)} {token?.symbol} on {chainName.toUpperCase().slice(0, 3)} within
             </div> :
                 <div className='flex-grow text-xl text-muted-foreground'>
                     Select A Token

@@ -71,5 +71,5 @@ const CurrencyInput = React.forwardRef<HTMLInputElement, InputProps>(
     )
   }
 )
-
+CurrencyInput.displayName = "CurrencyInput"
 export { Input, CurrencyInput }

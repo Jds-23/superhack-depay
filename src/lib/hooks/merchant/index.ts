@@ -1,6 +1,6 @@
 import { API_URL } from '@/constants/env';
 import { MetadataSchema } from '@/lib/types/metadata';
-import { Token, TokenSchema } from '@/lib/types/token';
+import { ethereumAddressSchema, Token, TokenSchema } from '@/lib/types/token';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod';
 
@@ -17,14 +17,17 @@ export interface Merchant {
 
 // Define the Zod schema for Merchant creation
 export const createMerchantSchema = z.object({
-    walletAddress: z.string(),
+    walletAddress: ethereumAddressSchema,
     baseToken: TokenSchema,
     metadata: MetadataSchema,
 });
 
 export type CreateMerchantType = z.infer<typeof createMerchantSchema>;
 
-const fetchMerchantById = async (id: string): Promise<Merchant> => {
+const fetchMerchantById = async (id?: string): Promise<Merchant> => {
+    if (!id) {
+        throw new Error('Merchant ID is required');
+    }
     const response = await fetch(`${API_URL}/api/merchants/${id}`);
     if (!response.ok) {
         throw new Error(`Failed to fetch merchant with ID ${id}`);
@@ -83,7 +86,7 @@ export const useMerchant = () => {
     const queryClient = useQueryClient();
 
     // Fetch merchant by ID
-    const useFetchMerchantById = (id: string) => {
+    const useFetchMerchantById = (id?: string) => {
         return useQuery<Merchant | null, Error>({
             queryKey: ['merchant', id],
             initialData: null,
