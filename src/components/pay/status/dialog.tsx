@@ -23,10 +23,12 @@ const explorers: {
 
 const PaymentStatusDialog = ({
     hashes,
-    statusArray
+    statusArray,
+    chains = [10, 10]
 }: {
     hashes: string[]
     statusArray: TPaymentStatus[]
+    chains?: number[]
 }) => {
 
     const waitingForSourceConfirmation: TPaymentStatus[] = [
@@ -101,7 +103,7 @@ const PaymentStatusDialog = ({
                             />
                             {
                                 hashes[index] ?
-                                    <a href={`${explorers[status?.chainId ?? 0] ?? 'https://explorer.routernitro.com/tx/'}${hashes[index]}`} className='flex gap-2 underline' target="_blank" rel="noreferrer">
+                                    <a href={`${explorers[chains[index] ?? 0] ?? 'https://explorer.routernitro.com/tx/'}${hashes[index]}`} className='flex gap-2 underline' target="_blank" rel="noreferrer">
                                         <p>{status.text}</p>
                                         <Image
                                             src={`/blockscout.png`}

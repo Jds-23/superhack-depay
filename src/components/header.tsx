@@ -32,8 +32,12 @@ const Header = () => {
                             "Connect Wallet"
                         )}
                 </button> */}
-                <Button>
-                    Connect Wallet
+                <Button
+                    onClick={() => {
+                        window.location.href = "/m";
+                    }}
+                >
+                    Dashboard
                 </Button>
             </div>
         </div>

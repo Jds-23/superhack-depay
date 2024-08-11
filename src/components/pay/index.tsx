@@ -16,10 +16,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import PaymentStatusDialog, { TPaymentStatus } from './status/dialog';
 import { usePeDeposit, usePeTransactionHash } from '@/lib/hooks/usePeQuote';
 import useWatchCrosschainTransaction from '@/lib/hooks/useWatchCrossTransaction';
-import { onDestinationError, onSourceConfirm, onSourceError, waitingForSourceConfirmation, waitingForSourceToTrigger } from './status/statuses';
+import { onDestinationConfirm, onDestinationError, onSourceConfirm, onSourceError, waitingForSourceConfirmation, waitingForSourceToTrigger } from './status/statuses';
 import { useSendToken } from '@/lib/hooks/useSendToken';
 import useTokenCalculations from '@/lib/hooks/useTokenCalculation';
 import { formatUnits } from 'viem';
+import { on } from 'events';
 
 export const paymentSchema = z.object({
     fromToken: TokenSchema,
@@ -151,14 +152,14 @@ const PayComponent = ({
         },
         onCrosschainDestConfirmed: (receipt) => {
             setHashes((prev) => [prev[0], receipt])
-            setStatusArray(onSourceConfirm)
+            setStatusArray(onDestinationConfirm)
         },
         onCrosschainFailed: (receipt) => {
             setStatusArray(onDestinationError)
         },
         onDestConfirm: (receipt) => {
             setHashes((prev) => [prev[0], receipt.blockHash])
-            setStatusArray(onSourceConfirm)
+            setStatusArray(onDestinationConfirm)
         },
         enabled: true,
         onDestFailed: (receipt) => {
@@ -192,6 +193,7 @@ const PayComponent = ({
                         statusArray={sendTokenStatus ? statusArray.length === 0 ?
                             [sendTokenStatus, ...waitingForSourceToTrigger]
                             : [sendTokenStatus, ...statusArray] : statusArray}
+
                     />
                 }
             </Dialog>
